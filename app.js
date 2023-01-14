@@ -240,9 +240,17 @@ async function main() {
         }
         return res.send('{"message":"Done!"}')
     });
-    app.post('/logout', bodyParser, async (req, res) => {
+    app.get('/logout', function (req, res, next) {
+        req.session.user = null
+        req.session.save(function (err) {
+            if (err) console.error(err)
 
-    });
+            req.session.regenerate(function (err) {
+                if (err) console.error(err)
+                res.redirect('/')
+            })
+        })
+    })
 
     app.listen(3000, function () {
         console.log('server started.')

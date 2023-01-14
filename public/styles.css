@@ -44,6 +44,7 @@ body {
 
 .link:hover {
     text-decoration: underline;
+    cursor: pointer;
 }
 
 .link {
@@ -109,6 +110,9 @@ textarea {
 
 
 
+.logout {
+    background-color: var(--secondary);
+}
 
 .col-header .logo {
     font-family: inherit;
@@ -341,7 +345,6 @@ div[role="progressbar"] {
 
 }
 
-.login-card .field {}
 
 .login-card .login .btn {
     width: 100%;
