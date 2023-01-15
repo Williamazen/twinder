@@ -13,8 +13,8 @@
 
 <body>
     <div class="bg-filter">
-        <form class="row main-row" method="post" action="/login">
-            <div class="login-card card">
+        <form class="row main-row" method="post" action="/signup">
+            <div class="signup-card card">
                 <div class="form-container">
                     <div class="header">
                         <svg viewBox="0 0 24 24" aria-label="twinder" role="img" class="logo">
@@ -26,33 +26,50 @@
                         </svg>
                     </div>
                     <div class="title">
-                        <h1>Sign in to Twinder</h1>
+                        <h1>Create your account</h1>
                     </div>
                     <div class="username field">
                         <div class="form-floating">
-                            <input type="text" class="form-control" name="username" value="<% if(locals.form){ %><%=form.username%><% } %>">
+                            <input type="text" class="form-control" required name="username" id="username">
                             <label for=" floatingInput">Username</label>
+                        </div>
+                    </div>
+                    <div class="email field">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" required name="email" id="email">
+                            <label for=" floatingInput">Email</label>
                         </div>
                     </div>
                     <div class="password field">
                         <div class="form-floating">
-                            <input type="password" class="form-control" name="password">
+                            <input type="password" class="form-control" required name="password" id="password" title="Passwords must have at least one number and uppercase letter.">
                             <label for="floatingInput">Password</label>
                         </div>
+                    </div>
+                    <div id="requirements">
 
                     </div>
+                    <div class="repeatPassword field">
+                        <div class="form-floating">
+                            <input type="password" class="form-control" required name="repeatPassword" id="repeatPassword">
+                            <label for="floatingInput">Repeat Password</label>
+                        </div>
+                    </div>
+
                     <%if(locals.error){%>
                     <div class="error">
                         <%=error%>
                     </div>
                     <%}%>
                 <div class="login">
-                    <button class="btn" id="submitButton" type="submit" disabled>Login</button>
+                    <button class="btn" type="submit" id="submitButton" disabled>Signup</button>
                 </div>
 
                 <div class="footer-text secondary">
-                    Don't have an account? <a href="/signup" class="link">Sign up</a>
+                    Already have an account? <a href="/login" class="link">Login here</a>
                 </div>
+
+
 
             </div>
         </div>

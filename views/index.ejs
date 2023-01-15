@@ -45,8 +45,12 @@
                         <div class="secondary">@<%= data[i].User.username %></div>
                         <div class="secondary">·</div>
                         <div class="secondary timesince"><%= 1 * data[i].createdAt %> </div>
+                        <% if (data[i].User.id === user.id){%>
                         <form id="tweet-box-form" class="delete" method="post" action="/delete/<%=data[i].id%>"><button class="btn delete" type="submit">x</button></form>
+                        <%};%>
+
                     </div>
+
                     <div class="text row">
                         <%= data[i].body %>
                     </div>
@@ -55,7 +59,7 @@
                     </div>
                     <div class="media-tags row secondary"></div>
                     <div class="row tweet-buttons">
-                        <button class="like btn row <%= likeList.includes(data[i].id) ? 'active' : ''%>" active="<%= likeList.includes(data[i].id) ? 1 : 0%>" postId="<%= data[i].id %>">
+                        <button onclick="likeDislike(<%=data[i].id%>)" class="like btn row <%= likeList.includes(data[i].id) ? 'active' : ''%>" active="<%= likeList.includes(data[i].id) ? 1 : 0%>" postId="<%= data[i].id %>">
                             <div>♡</div>
                             <div class="like-count"><%=data[i].Likes.length%></div>
                         </button>

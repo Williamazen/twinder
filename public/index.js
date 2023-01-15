@@ -80,13 +80,9 @@ times.forEach(time => time.innerHTML = formatTime(time.innerHTML))
 
 const likeButtons = document.querySelectorAll('.like.btn');
 likeButtons.forEach(button => {
-
-
-
     button.addEventListener('click', async () => {
         const likeCount = parseInt(button.querySelector('.like-count').innerHTML, 10);
         const active = parseInt(button.getAttribute('active'), 10);
-        const postId = button.getAttribute('postId');
         if (active) {
             // Dislike
             button.setAttribute('active', 0);
@@ -99,33 +95,60 @@ likeButtons.forEach(button => {
             button.querySelector('.like-count').innerHTML = likeCount + 1;
             button.setAttribute('class', 'like btn row active');
         }
-
-
-        const rawResponse = await fetch('/like', {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ active: active, postId: postId })
-        });
-        const content = await rawResponse.json();
-
     })
-
-
-
 })
+
+async function likeDislike(postId) {
+    const rawResponse = await fetch('/like', {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ postId: postId })
+    });
+};
 
 // handle floating form
 
 const fields = document.querySelectorAll('.field')
-const loginButton = document.querySelector('.login-card .login .btn');
+const loginButton = document.getElementById('submitButton');
 
-fields.forEach(field => {
+// - Looks for special fields and see if they're all there
+const specialFields = {
+    email: document.getElementById('email'),
+    password: document.getElementById('password'),
+    repeatPassword: document.getElementById('repeatPassword')
+}
+const hasSpecialFields = Object.values(specialFields).every((x) => !(x === null))
 
+
+const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$/;
+const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/;
+
+if (hasSpecialFields) {
+    password.addEventListener('focus', (event) => {
+        document.getElementById('requirements').innerHTML =
+            '<h4 class="secondary">Passwords must have:</h4>' +
+            '<ul class="secondary">' +
+            '<li>At least 1 UPPERCASE letter;</li>' +
+            '<li>At least one number;</li>' +
+            '<li>8 or more characters.</li>' +
+            '</ul>';
+
+        document.body.style
+    });
+
+    password.addEventListener('blur', (event) => {
+        document.getElementById('requirements').innerHTML = null;
+
+    });
+}
+
+if (fields) fields.forEach(field => {
     const form = field.querySelector('.form-control')
     const formLabel = field.querySelector('.form-floating label')
+    var regexCheck;
 
     if (form && form.value) {
         formLabel.setAttribute('class', 'active secondary');
@@ -133,8 +156,10 @@ fields.forEach(field => {
     }
 
     if (form) form.addEventListener('input', () => {
-        // Disable login button if all fields are empty
-        loginButton.disabled = !Object.values(fields).every(x => x.querySelector('input').value)
+        // If all fields are filled and (if they exist) all special fields have the correct regex the button gets enabled
+        regexCheck = hasSpecialFields ? specialFieldsValidation() : true;
+        loginButton.disabled = !Object.values(fields).every(x => x.querySelector('input').value && regexCheck)
+        console.log(emailRegex.test(specialFields.email.value))
     });
 
     if (form) form.addEventListener('focusin', () => {
@@ -147,6 +172,17 @@ fields.forEach(field => {
     });
 });
 
+function specialFieldsValidation() {
+
+
+    // Change colors of fields based on if they are active and valid
+    if (specialFields.email.value) specialFields.email.style.borderColor = emailRegex.test(specialFields.email.value) ? 'green' : 'red';
+    if (specialFields.repeatPassword.value) specialFields.repeatPassword.style.borderColor = specialFields.password.value === specialFields.repeatPassword.value ? 'green' : 'red';
+    if (specialFields.password.value) specialFields.password.style.borderColor = passwordRegex.test(specialFields.password.value) ? 'green' : 'red';
+
+
+    return emailRegex.test(specialFields.email.value) && passwordRegex.test(specialFields.password.value) && specialFields.password.value === specialFields.repeatPassword.value
+}
 
 
 

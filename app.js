@@ -28,6 +28,7 @@ async function main() {
         username: {
             type: DataTypes.STRING,
             allowNull: false
+
         },
         handle: {
             type: DataTypes.STRING,
@@ -35,7 +36,10 @@ async function main() {
         },
         email: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: false,
+            validate: {
+                isEmail: true,
+            }
         },
         password: {
             type: DataTypes.STRING,
@@ -95,6 +99,7 @@ async function main() {
         }
     })
 
+
     // - Express        
 
     // setting up body parser
@@ -136,7 +141,7 @@ async function main() {
         data = await Post.findAll({
             attributes: ['id', 'body', 'createdAt'],
             include: [
-                { model: User, attributes: ['username', 'handle'] },
+                { model: User, attributes: ['id', 'username', 'handle'] },
                 { model: Like },
             ]
         })
@@ -163,7 +168,7 @@ async function main() {
 
         const post = Post.create({
             body: req.body.tweet,
-            UserId: test.id
+            UserId: req.session.user.id
         })
         res.redirect('/')
     });
@@ -182,17 +187,17 @@ async function main() {
 
         bcrypt.compare(req.body.password, user.password, function (err, result) {
 
-            if (err && false) {
+            if (err) {
                 return res.render('login', { error: err, form: req.body });
             }
-            if (!result && false) {
+            if (!result) {
                 return res.render('login', { error: 'Invalid Username or Password', form: req.body })
             }
 
 
             req.session.regenerate(function (err) {
                 if (err) return res.render('login', { error: err, form: req.body });
-                req.session.user = user;
+                req.session.user = { id: user.id, username: user.username };
                 req.session.save(function (err) {
                     if (err) return res.render('login', { error: err, form: req.body });
                     console.log('session saved')
@@ -210,37 +215,61 @@ async function main() {
 
     app.post('/delete/:postId', urlencodedParser, async (req, res) => {
 
-        await Post.destroy({
-            where: {
-                id: req.params.postId
-            }
-        });
+        var post = await Post.findByPk(req.params.postId);
+        if (post.UserId == req.session.user.id) post.destroy();
         res.redirect('/')
     });
 
     app.post('/like', jsonParser, async (req, res) => {
         const postId = req.body.postId;
 
-        if (req.body.active) {
-            //Dislike
-            const like = Like.destroy({
-                where: {
-                    PostId: postId
-                }
-            })
-        } else {
+        const [like, created] = await Like.findOrCreate({
+            where: { PostId: postId, UserId: req.session.user.id },
+            defaults: {
+                PostId: postId,
+                UserId: req.session.user.id
+            }
+        })
 
-            const [like, created] = await Like.findOrCreate({
-                where: { PostId: postId },
-                defaults: {
-                    PostId: postId,
-                    UserId: req.session.user.id
-                }
-            })
-        }
+        if (!created) { like.destroy() }
         return res.send('{"message":"Done!"}')
     });
-    app.get('/logout', function (req, res, next) {
+    app.get('/signup', urlencodedParser, function (req, res) {
+        return res.render('signup')
+    })
+
+    app.post('/signup', urlencodedParser, async (req, res) => {
+
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$/;
+        const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/;
+
+        // Check for valid inputs
+        if (!emailRegex.test(req.body.email) && !passwordRegex.test(req.body.password) && req.body.password !== req.body.repeatPassword) {
+            return res.render('signup', { error: 'Invalid Data!', form: req.body })
+        };
+
+        // Check for unique email
+        const emailCheck = await User.findOne({ where: { email: req.body.email } });
+        if (emailCheck !== null) { return res.render('signup', { error: 'Email Already Exists!', form: req.body }) }
+
+
+        // Check for unique username, if username is unique creates user with hashed password
+        var bcryptPassword = bcrypt.hashSync(req.body.password, 10)
+
+        const [user, created] = await User.findOrCreate({
+            where: { username: req.body.username },
+            defaults: {
+                handle: req.body.username,
+                email: req.body.email,
+                password: bcryptPassword
+            }
+        })
+        if (!created) { return res.render('signup', { error: 'User Already Exists!', form: req.body }) }
+
+        return res.redirect('/login')
+    })
+
+    app.get('/logout', function (req, res) {
         req.session.user = null
         req.session.save(function (err) {
             if (err) console.error(err)
