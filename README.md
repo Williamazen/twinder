@@ -3,6 +3,12 @@
 'Twinder' is a Twitter clone made for practice purposes. It has the most basic features of twitter and uses no React. 
 [Preview](https://twinder.onrender.com)
 
+## Features
+- Fully functioning CRUD operation for tweets
+- Like/Dislike logic
+- Login, Registration and session mannagement
+- Encripted passwords and session tokens saved on the DB
+
 ## Stack
 - **Front:**
 	-  Raw JS and CSS for basic animations and styling
