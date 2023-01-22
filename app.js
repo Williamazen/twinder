@@ -4,7 +4,7 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const crypto = require("crypto");
 const session = require('express-session');
-var SequelizeStore = require("connect-session-sequelize")(session.Store);
+let SequelizeStore = require("connect-session-sequelize")(session.Store);
 
 
 
@@ -104,8 +104,8 @@ async function main() {
 
     // setting up body parser
 
-    var jsonParser = bodyParser.json();
-    var urlencodedParser = bodyParser.urlencoded({ extended: false });
+    let jsonParser = bodyParser.json();
+    let urlencodedParser = bodyParser.urlencoded({ extended: false });
 
     // setting up express
 
@@ -115,7 +115,7 @@ async function main() {
 
     // Initializing session
 
-    var myStore = new SequelizeStore({
+    let myStore = new SequelizeStore({
         db: sequelize,
     });
     app.use(
@@ -156,7 +156,7 @@ async function main() {
                 }
             ]
         });
-        var likeList = []
+        let likeList = []
         await userLikes.forEach(like => {
             likeList.push(like.id);
         });
@@ -215,7 +215,7 @@ async function main() {
 
     app.post('/delete/:postId', urlencodedParser, async (req, res) => {
 
-        var post = await Post.findByPk(req.params.postId);
+        let post = await Post.findByPk(req.params.postId);
         if (post.UserId == req.session.user.id) post.destroy();
         res.redirect('/')
     });
@@ -254,7 +254,7 @@ async function main() {
 
 
         // Check for unique username, if username is unique creates user with hashed password
-        var bcryptPassword = bcrypt.hashSync(req.body.password, 10)
+        let bcryptPassword = bcrypt.hashSync(req.body.password, 10)
 
         const [user, created] = await User.findOrCreate({
             where: { username: req.body.username },

@@ -40,7 +40,7 @@ if (textfield) textfield.addEventListener('input', () => {
 const frames = document.querySelectorAll('.tweet .media');
 const maxHeight = 400;
 frames.forEach(frame => {
-    var image = frame.firstChild;
+    let image = frame.firstChild;
     if (!image.complete) {
         frame.remove();
     }
@@ -61,7 +61,7 @@ const hour = 60 * minute;
 const day = 24 * hour;
 
 function formatTime(millisecondInput) {
-    var diff = Date.now() - millisecondInput
+    let diff = Date.now() - millisecondInput
     if (diff > day) {
         const date = new Date(millisecondInput / 1000);
         return date.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
@@ -148,7 +148,7 @@ if (hasSpecialFields) {
 if (fields) fields.forEach(field => {
     const form = field.querySelector('.form-control')
     const formLabel = field.querySelector('.form-floating label')
-    var regexCheck;
+    let regexCheck;
 
     if (form && form.value) {
         formLabel.setAttribute('class', 'active secondary');
