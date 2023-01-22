@@ -4,6 +4,7 @@
 [Preview](https://twinder.onrender.com)
 
 ## Features
+- Animations and strigfied dates to improve UX
 - Fully functioning CRUD operation for tweets
 - Like/Dislike logic
 - Login, Registration and session mannagement
