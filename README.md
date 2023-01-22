@@ -1,6 +1,7 @@
 # Twinder
 
-'Twinder' is a Twitter clone made for practice purposes. It has the most basic features of twitter and uses no React.
+'Twinder' is a Twitter clone made for practice purposes. It has the most basic features of twitter and uses no React. 
+[Preview](https://twinder.onrender.com)
 
 ## Stack
 - **Front:**
